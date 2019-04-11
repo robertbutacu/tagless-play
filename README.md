@@ -9,19 +9,15 @@ Because of this, in order to fully integrate them, there are 2 steps to be taken
  
  It would look some along the lines of this:
  
-   `override def delete(): Action[AnyContent] = Action.async {`
-     
-     `toFuture {`
-     
-       `withRecover {`
-       
-         `withValidJson[Tab] { `
-         
-           `tab => tabService.delete(tab).map(_ => Ok)`
-     
-     `}`
-   
-   `}`
+   ```override def delete(): Action[AnyContent] = Action.async {
+        toFuture {
+          withRecover {
+            withValidJson[Tab] {
+              tab => tabService.delete(tab).map(_ => Ok)
+            }
+          }
+        }
+      }```
    
    And the other way around for the repository aswell:
    
