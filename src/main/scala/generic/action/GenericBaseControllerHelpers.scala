@@ -7,6 +7,10 @@ import cats.~>
 
 trait GenericBaseControllerHelpers extends BaseControllerHelpers {
   object GenericAction {
+    def invokeBlock[F[_], A](request: Request[A], block: Request[A] => F[Result]): F[Result] = block(request)
+
+    def apply[F[_], A](block: => Result): Action[AnyContent] = controllerComponents.actionBuilder(block)
+
     def async[F[_], A](bodyParser: BodyParser[A])
                         (block: Request[A] => F[Result])
                         (implicit transformer: F ~> Future): Action[A] =
