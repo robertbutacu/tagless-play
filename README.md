@@ -27,13 +27,14 @@ Because of this, in order to fully integrate them, there are 2 steps to be taken
      override def remove(tab: Tab): F[Unit] = 
         collection.flatMap(c => fromFuture{ c.findAndRemove(tab).map(_ => ()) } )
    ```  
+   
    Note that the collection is working in `F` as well:
     
-    ```scala
+   ```scala
     def collection: F[JSONCollection] = fromFuture {
       reactiveMongoApi.database.map(_.collection("tabinder"))
     }
-    ```
+   ```  
 
 It's easy to see how this becomes tedious: for every action/db call, there is a need to wrap it with the natural transformation to make the types work. Furthermore, should this technique be used intensively on a platform, there will be the same small bits of code which will be moved all throughout the projects.
 
