@@ -1,7 +1,6 @@
 package experiments
 
 import cats.{Monad, ~>}
-import generic.action.AbstractGenericController
 import generic.action.filter.{GenericActionFilter, GenericActionRefiner}
 import play.api.mvc._
 
@@ -29,7 +28,9 @@ object Experiments {
                        requestFiltered: RequestFiltered[F],
                        extraRequest: ExtraRequest[F],
                        cc: ControllerComponents
-                       ) extends AbstractGenericController(cc) {
+                       )(implicit M: Monad[F]) extends AbstractController(cc) {
     def filtered: ActionBuilder[RequestWithProviderId, AnyContent] = Action andThen requestFiltered andThen extraRequest
+
+    filtered.genericAsync(implicit request => M.pure(Ok))
   }
 }
