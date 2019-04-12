@@ -9,7 +9,7 @@ import scala.language.higherKinds
 object GenericActionBuilder {
   implicit class GenericActionBuilder[+R[_], F[_], A](actionBuilder: ActionBuilder[R, A]) {
     def genericAsync(bodyParser: BodyParser[A])
-             (block: Request[A] => F[Result])
+             (block: R[A] => F[Result])
              (implicit transformer: F ~> Future): Action[A] =
       actionBuilder.async(bodyParser)(r => transformer(block(r)))
 
