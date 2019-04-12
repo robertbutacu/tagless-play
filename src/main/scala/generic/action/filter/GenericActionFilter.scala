@@ -8,7 +8,7 @@ import cats.syntax.all._
 
 import scala.concurrent.Future
 
-trait GenericActionFilter[R[_], F[_]] extends ActionFilter[R] {
+trait GenericActionFilter[F[_], R[_]] extends ActionFilter[R] {
   implicit def transformer: F ~> Future
 
   def genericFilter[A](request: R[A]): F[Option[Result]]

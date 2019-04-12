@@ -6,7 +6,7 @@ import play.api.mvc.{ActionRefiner, Result}
 import scala.concurrent.Future
 import scala.language.higherKinds
 
-trait GenericActionRefiner[-R[_], +P[_], F[+_]] extends ActionRefiner[R, P] {
+trait GenericActionRefiner[F[+_], -R[_], +P[_]] extends ActionRefiner[R, P] {
   implicit def transformer: F ~> Future
 
   def genericRefine[A](request: R[A]): F[Either[Result, P[A]]]
