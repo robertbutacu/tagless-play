@@ -1,4 +1,4 @@
-package generic.action.builder
+package generic.v1.builder
 
 import cats.~>
 import play.api.mvc._

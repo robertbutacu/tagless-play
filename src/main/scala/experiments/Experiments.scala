@@ -1,11 +1,11 @@
 package experiments
 
 import cats.{Monad, ~>}
-import generic.action.filter.{GenericActionFilter, GenericActionRefiner}
+import generic.v1.filter.{GenericActionFilter, GenericActionRefiner}
 import play.api.mvc._
 import scala.concurrent.{ExecutionContext, ExecutionContextExecutor, Future}
 import scala.language.higherKinds
-import generic.action.builder.GenericActionBuilder.GenericActionBuilder
+import generic.v1.builder.GenericActionBuilder.GenericActionBuilder
 import play.api.libs.json.Json
 
 object Experiments extends App {
