@@ -1,12 +1,14 @@
-package experiments
+package generic.v1.experiments
 
 import cats.{Monad, ~>}
+import generic.v1.builder.AbstractGenericController
+import generic.v1.builder.GenericActionBuilder.GenericActionBuilder
 import generic.v1.filter.{GenericActionFilter, GenericActionRefiner}
+import play.api.libs.json.Json
 import play.api.mvc._
+
 import scala.concurrent.{ExecutionContext, ExecutionContextExecutor, Future}
 import scala.language.higherKinds
-import generic.v1.builder.GenericActionBuilder.GenericActionBuilder
-import play.api.libs.json.Json
 
 object Experiments extends App {
 
@@ -36,7 +38,7 @@ object Experiments extends App {
                        requestFiltered: RequestFiltered[F],
                        extraRequest: ExtraRequest[F],
                        cc: ControllerComponents
-                       )(implicit M: Monad[F], transformer: F ~> Future) extends AbstractController(cc) {
+                       )(implicit M: Monad[F], transformer: F ~> Future) extends AbstractGenericController(cc) {
     def filtered: ActionBuilder[RequestWithProviderId, AnyContent] = Action andThen requestFiltered andThen extraRequest
   }
 
