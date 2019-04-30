@@ -7,7 +7,7 @@ import scala.concurrent.Future
 import scala.language.higherKinds
 
 object GenericActionBuilder {
-  implicit class GenericActionBuilder[+R[_], F[_], A](actionBuilder: ActionBuilder[R, A]) {
+  implicit class GenericActionBuilder[F[_], +R[_], A](actionBuilder: ActionBuilder[R, A]) {
     def genericAsync(bodyParser: BodyParser[A])
              (block: R[A] => F[Result])
              (implicit transformer: F ~> Future): Action[A] =

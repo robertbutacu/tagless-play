@@ -11,9 +11,6 @@ trait GenericActionRefiner[F[+_], -R[_], +P[_]] extends GenericActionFunction[F,
 
   def genericRefine[A](request: R[A]): F[Either[Result, P[A]]]
 
-  override def invokeBlockG[A](request: R[A], block: P[A] => F[Result]): F[Result] = ???
-    //refine(request).flatMap(_.fold(Future.successful, block))(executionContext)
-
   override def invokeBlock[A](request: R[A], block: P[A] => Future[Result]): Future[Result] =
     refine(request).flatMap(_.fold(Future.successful, block))(executionContext)
 
