@@ -2,6 +2,7 @@ package generic.v2.experiments
 
 import cats.{Monad, ~>}
 import generic.v2.builder.AbstractGenericController
+import generic.v2.builder.GenericActionBuilder.GenericActionBuilder
 import generic.v2.filter.{GenericActionFilter, GenericActionRefiner}
 import play.api.libs.json.Json
 import play.api.mvc._
@@ -36,17 +37,17 @@ object Experiments extends App {
 
   class ComposedActions[F[+_]](
                                 requestFiltered: RequestFiltered[F],
-                                extraRequest: ExtraRequest[F],
-                                cc: ControllerComponents
+                                extraRequest   : ExtraRequest[F],
+                                cc             : ControllerComponents
                               )(implicit M: Monad[F], transformer: F ~> Future) extends AbstractGenericController(cc) {
     def filtered: ActionBuilder[RequestWithProviderId, AnyContent] = Action andThen requestFiltered andThen extraRequest
   }
 
   class Controller[F[+_]](composedActions: ComposedActions[F],
-                          someService: SomeService[F],
-                          cc: ControllerComponents)(implicit M: Monad[F], transformer: F ~> Future) extends AbstractGenericController(cc) {
+                          someService    : SomeService[F],
+                          cc             : ControllerComponents)(implicit M: Monad[F], transformer: F ~> Future) extends AbstractGenericController(cc) {
 
-    def someAction: Action[AnyContent] = ??? //composedActions.filtered.genericAsync(implicit request => M.pure(Ok(Json.obj())))
+    def someAction: Action[AnyContent] = composedActions.filtered.genericAsync(implicit request => M.pure(Ok(Json.obj())))
 
     def otherAction: Action[AnyContent] = GenericAction.async(implicit request => M.pure(Ok(Json.obj())))
   }

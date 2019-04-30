@@ -1,12 +1,12 @@
 package generic.v2.filter
 
 import cats.~>
-import play.api.mvc.Result
+import play.api.mvc.{ActionFunction, Result}
 
 import scala.concurrent.Future
 import scala.language.higherKinds
 
-trait GenericActionRefiner[F[+_], -R[_], +P[_]] extends GenericActionFunction[F, R, P] {
+trait GenericActionRefiner[F[+_], -R[_], +P[_]] extends ActionFunction[R, P] {
   implicit def transformer: F ~> Future
 
   def genericRefine[A](request: R[A]): F[Either[Result, P[A]]]
