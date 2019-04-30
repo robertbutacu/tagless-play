@@ -11,7 +11,7 @@ import scala.concurrent.{ExecutionContext, ExecutionContextExecutor, Future}
 import scala.language.higherKinds
 
 
-object Experiments extends App {
+private[experiments] object Experiments extends App {
 
   implicit val ec: ExecutionContextExecutor = ExecutionContext.global
 
