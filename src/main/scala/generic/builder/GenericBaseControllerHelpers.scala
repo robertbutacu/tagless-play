@@ -1,4 +1,4 @@
-package generic.v2.builder
+package generic.builder
 
 import cats.~>
 import play.api.mvc._

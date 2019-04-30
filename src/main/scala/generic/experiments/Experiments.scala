@@ -1,14 +1,15 @@
-package generic.v1.experiments
+package generic.experiments
 
 import cats.{Monad, ~>}
-import generic.v1.builder.AbstractGenericController
-import generic.v1.builder.GenericActionBuilder.GenericActionBuilder
-import generic.v1.filter.{GenericActionFilter, GenericActionRefiner}
+import generic.builder.AbstractGenericController
+import generic.builder.GenericActionBuilder.GenericActionBuilder
+import generic.filter.{GenericActionFilter, GenericActionRefiner}
 import play.api.libs.json.Json
 import play.api.mvc._
 
 import scala.concurrent.{ExecutionContext, ExecutionContextExecutor, Future}
 import scala.language.higherKinds
+
 
 object Experiments extends App {
 
@@ -35,18 +36,20 @@ object Experiments extends App {
   }
 
   class ComposedActions[F[+_]](
-                       requestFiltered: RequestFiltered[F],
-                       extraRequest: ExtraRequest[F],
-                       cc: ControllerComponents
-                       )(implicit M: Monad[F], transformer: F ~> Future) extends AbstractGenericController(cc) {
+                                requestFiltered: RequestFiltered[F],
+                                extraRequest   : ExtraRequest[F],
+                                cc             : ControllerComponents
+                              )(implicit M: Monad[F], transformer: F ~> Future) extends AbstractGenericController(cc) {
     def filtered: ActionBuilder[RequestWithProviderId, AnyContent] = Action andThen requestFiltered andThen extraRequest
   }
 
   class Controller[F[+_]](composedActions: ComposedActions[F],
-                          someService: SomeService[F],
-                         cc: ControllerComponents)(implicit M: Monad[F], transformer: F ~> Future) extends AbstractController(cc) {
+                          someService    : SomeService[F],
+                          cc             : ControllerComponents)(implicit M: Monad[F], transformer: F ~> Future) extends AbstractGenericController(cc) {
 
     def someAction: Action[AnyContent] = composedActions.filtered.genericAsync(implicit request => M.pure(Ok(Json.obj())))
+
+    def otherAction: Action[AnyContent] = GenericAction.async(implicit request => M.pure(Ok(Json.obj())))
   }
 
   class SomeService[F[_]]()

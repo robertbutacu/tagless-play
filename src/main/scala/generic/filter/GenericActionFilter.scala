@@ -1,4 +1,4 @@
-package generic.v2.filter
+package generic.filter
 
 import cats.~>
 import play.api.mvc.{ActionFilter, Result}

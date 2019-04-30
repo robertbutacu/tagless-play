@@ -1,4 +1,4 @@
-package generic.v1.builder
+package generic.builder
 
 import play.api.mvc.ControllerComponents
 

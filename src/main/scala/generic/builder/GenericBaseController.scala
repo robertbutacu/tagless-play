@@ -1,4 +1,4 @@
-package generic.v2.builder
+package generic.builder
 
 import play.api.mvc.{ActionBuilder, AnyContent, Request}
 
