@@ -49,7 +49,7 @@ private[experiments] object Experiments extends App {
                            someService: SomeService[F],
                            cc: ControllerComponents)(implicit M: Monad[F], transformer: F ~> Future) extends AbstractGenericController(cc) {
 
-    def someAction: Action[AnyContent] = composedActions.filtered.toActionBuilder.genericAsync(implicit request => M.pure(Ok(Json.obj())))
+    def someAction: Action[AnyContent] = composedActions.filtered.async(implicit request => M.pure(Ok(Json.obj())))
 
     def otherAction: Action[AnyContent] = GenericAction.async(implicit request => M.pure(Ok(Json.obj())))
   }

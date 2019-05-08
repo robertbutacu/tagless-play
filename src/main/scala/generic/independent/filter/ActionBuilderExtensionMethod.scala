@@ -7,7 +7,6 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.language.higherKinds
 
 object ActionBuilderExtensionMethod {
-
   implicit class GenericActionBuilderExtension[F[_], +R[_], B](actionBuilder: ActionBuilder[R, B]) {
     def toGenericAction(implicit toF: F ~> Future,
                         fromF: Future ~> F,
