@@ -1,28 +1,30 @@
 package generic.independent.filter
 
 import cats.{Monad, ~>}
-import play.api.mvc.{ActionBuilder, Request, Result}
+import play.api.mvc.{ActionBuilder, BodyParser, Request, Result}
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.language.higherKinds
 
 object ActionBuilderExtensionMethod {
 
-  implicit class GenericActionBuilder[F[_], +R[_], B](actionBuilder: ActionBuilder[R, B]) {
-    def toGenericAction(implicit toFuture: F ~> Future,
-                        fromFuture: Future ~> F,
+  implicit class GenericActionBuilderExtension[F[_], +R[_], B](actionBuilder: ActionBuilder[R, B]) {
+    def toGenericAction(implicit toF: F ~> Future,
+                        fromF: Future ~> F,
                         M: Monad[F],
-                        ec: ExecutionContext
-                       ): GenericAction[F, Request, R] = new GenericAction[F, Request, R] {
-      override def toFuture: F ~> Future = toFuture
+                        executionContext: ExecutionContext
+                       ): GenericActionBuilder[F, R, B] = new GenericActionBuilder[F, R, B] {
+      override implicit def toFuture: F ~> Future = toF
 
-      override def fromFuture: Future ~> F = fromFuture
+      override implicit def fromFuture: Future ~> F = fromF
+
+      override def parser: BodyParser[B] = actionBuilder.parser
+
+      override implicit def ec: ExecutionContext = executionContext
 
       override def invokeBlock[A](request: Request[A], block: R[A] => F[Result]): F[Result] = {
-        super.invokeBlock(request, block)
+        fromFuture(actionBuilder.invokeBlock(request, {p: R[A] => toFuture(block(p))}))
       }
-
-      override implicit def ec: ExecutionContext = ec
     }
   }
 }
