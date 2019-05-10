@@ -6,12 +6,11 @@ import play.api.mvc._
 import scala.concurrent.{ExecutionContext, Future}
 import scala.language.higherKinds
 
-trait GenericAction[F[_], -R[_], +P[_]] {
+trait GenericAction[F[+_], -R[_], +P[_]] {
   self =>
 
   def toFuture:   F      ~> Future
   def fromFuture: Future ~> F
-
   implicit def ec: ExecutionContext
 
   def invokeBlock[A](request: R[A], block: P[A] => F[Result]): F[Result]

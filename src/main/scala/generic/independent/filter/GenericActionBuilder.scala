@@ -8,11 +8,12 @@ import scala.language.higherKinds
 
 trait GenericActionBuilder[F[_], +R[_], B] extends GenericAction[F, Request, R] {
   self =>
+
   implicit def toFuture:   F      ~> Future
   implicit def fromFuture: Future ~> F
+  implicit def ec:         ExecutionContext
 
   def parser: BodyParser[B]
-  implicit def ec: ExecutionContext
 
   override def andThen[Q[_]](other: GenericAction[F, R, Q]): GenericActionBuilder[F, Q, B] = new GenericActionBuilder[F, Q, B] {
     override implicit def toFuture:   F      ~> Future = self.toFuture
