@@ -1,4 +1,4 @@
-package generic.independent.filter
+package generic.alternative
 
 import cats.{Monad, ~>}
 import play.api.mvc.{ActionBuilder, BodyParser, Request, Result}

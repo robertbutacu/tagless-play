@@ -1,4 +1,4 @@
-package generic.independent.filter
+package generic.alternative
 
 import play.api.mvc.Result
 import cats.syntax.all._
