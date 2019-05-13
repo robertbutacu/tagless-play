@@ -1,6 +1,6 @@
 package generic.alternative.experiments
 
-import cats.{Monad, ~>}
+import cats.{InjectK, Monad, ~>}
 import generic.alternative.{GenericActionBuilder, GenericActionFilter, GenericActionRefiner}
 import generic.builder.AbstractGenericController
 import play.api.libs.json.Json
@@ -16,16 +16,14 @@ private[experiments] object Experiments extends App {
 
   case class RequestWithProviderId[A](providerId: String, request: Request[A]) extends WrappedRequest[A](request)
 
-  class RequestFiltered[F[+ _]]()(implicit val toFuture: F ~> Future,
-                                  val fromFuture: Future ~> F,
+  class RequestFiltered[F[+ _]]()(implicit val injector: InjectK[F, Future],
                                   val M: Monad[F],
                                   val ec: ExecutionContext) extends GenericActionFilter[F, Request] {
     override def filter[A](request: Request[A]): F[Option[Result]] =
       implicitly[Monad[F]].pure(None)
   }
 
-  class ExtraRequest[F[+ _]]()(implicit val toFuture: F ~> Future,
-                               val fromFuture: Future ~> F,
+  class ExtraRequest[F[+ _]]()(implicit val injector: InjectK[F, Future],
                                val M: Monad[F],
                                val ec: ExecutionContext)
     extends GenericActionRefiner[F, Request, RequestWithProviderId] {
@@ -38,8 +36,7 @@ private[experiments] object Experiments extends App {
                                  requestFiltered: RequestFiltered[F],
                                  extraRequest: ExtraRequest[F],
                                  cc: ControllerComponents
-                               )(implicit val toFuture: F ~> Future,
-                                 val fromFuture: Future ~> F,
+                               )(implicit val injector: InjectK[F, Future],
                                  val M: Monad[F]) extends AbstractGenericController(cc) {
     def filtered: GenericActionBuilder[F, Request, AnyContent] = Action.toGenericAction andThen requestFiltered andThen extraRequest
   }
