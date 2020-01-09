@@ -2,7 +2,7 @@ package generic.experiments
 
 import cats.{Monad, ~>}
 import generic.builder.AbstractGenericController
-import generic.builder.GenericActionBuilder.GenericActionBuilder
+import generic.builder.GenericActionBuilder.GenericActionBuilderAsync
 import generic.filter.{GenericActionFilter, GenericActionRefiner}
 import play.api.libs.json.Json
 import play.api.mvc._
