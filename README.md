@@ -4,7 +4,7 @@ A small library which enables generic programming in `Play`.
 The main problem with using a technique like `Tagless Final` and `Play` is the fact that the framework is bound to using `Future` everywhere where some kind of sync/async operation is performed. 
 
 Because of this, in order to fully integrate them, there are 2 steps to be taken:
- 1. have some natural transformations in scope: `F[] ~> Future[]` and most likely `Future[] ~> F[]` if the ReactiveMongoRepository is being used.
+ 1. have some natural transformations in scope: `F[] ~> Future[]` and most likely `Future[] ~> F[]` if some outside dependency is being used (not necessarily `Future`, but maybe your other preferred effect)
  2. wrap the functions which are generic - returning some `F[A]` - with the natural transformation so `toFuture: F ~> Future` is done in order to accomodate to `Play`'s idea of `Future[Result]` in the controllers 
  
  It would look some along the lines of this:
@@ -21,14 +21,14 @@ Because of this, in order to fully integrate them, there are 2 steps to be taken
       }
    ```
    
-   And the other way around for the repository aswell:
+   And the other way around for an outside dependency like a repository aswell:
    
    ```scala
      override def remove(tab: Tab): F[Unit] = 
         collection.flatMap(c => fromFuture{ c.findAndRemove(tab).map(_ => ()) } )
    ```  
    
-   Note that the collection is working in `F` as well:
+   Note that the collection from Mongo Repository is working in `F` as well:
     
    ```scala
     def collection: F[JSONCollection] = fromFuture {
@@ -54,4 +54,4 @@ For example, the controller will look like this:
    ```
    
 The natural transformation still needs to be implicitly in scope, but no longer it is needed to wrap/unwrap from/to `F[]`/`Future[]`.
-   
+  
